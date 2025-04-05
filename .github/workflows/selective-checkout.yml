@@ -1,0 +1,84 @@
+name: Selective Checkout Demo
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  selective-checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout specific files
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            # Include README.md
+            README.md
+            
+            # Include all files from folder1 except file2 and file5
+            folder1/file1
+            folder1/file3
+            folder1/file4
+            
+            # Include all files from dir except text1 and text5
+            dir/text2
+            dir/text3
+            dir/text4
+            
+            # Include all files from dir/dir1
+            dir/dir1/text11
+            dir/dir1/text12
+          sparse-checkout-cone-mode: false
+
+      - name: List checked out files
+        run: |
+          echo "Root directory contents:"
+          ls -la
+          echo "==============================="
+          
+          echo "Checking contents of folder1:"
+          ls -la folder1 || echo "folder1 not found"
+          echo "==============================="
+          
+          echo "Checking contents of dir:"
+          ls -la dir || echo "dir not found"
+          echo "==============================="
+          
+          echo "Checking contents of dir/dir1:"
+          ls -la dir/dir1 || echo "dir/dir1 not found"
+
+      - name: Verify excluded files
+        run: |
+          echo "Verifying excluded files don't exist:"
+          
+          if [ -f "folder1/file2" ]; then
+            echo "ERROR: folder1/file2 was not excluded!"
+          else
+            echo "SUCCESS: folder1/file2 was properly excluded."
+          fi
+          
+          if [ -f "folder1/file5" ]; then
+            echo "ERROR: folder1/file5 was not excluded!"
+          else
+            echo "SUCCESS: folder1/file5 was properly excluded."
+          fi
+          
+          if [ -f "dir/text1" ]; then
+            echo "ERROR: dir/text1 was not excluded!"
+          else
+            echo "SUCCESS: dir/text1 was properly excluded."
+          fi
+          
+          if [ -f "dir/text5" ]; then
+            echo "ERROR: dir/text5 was not excluded!"
+          else
+            echo "SUCCESS: dir/text5 was properly excluded."
+          fi
+
+      - name: Run your actual processing
+        run: |
+          echo "Processing checked out files..."
+          # Add your processing commands here
