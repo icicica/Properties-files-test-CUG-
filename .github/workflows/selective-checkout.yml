@@ -81,4 +81,12 @@ jobs:
       - name: Run your actual processing
         run: |
           echo "Processing checked out files..."
+                # Option 1: Rename with current date
+      - name: Copy file with date
+        run: |
+          mkdir -p folder1
+          DATE=$(date +%Y-%m-%d)
+          cp folder1/file1 folder1/file1_${DATE}
+          echo "File copied to dir2/file1_${DATE}"
+          
           # Add your processing commands here
