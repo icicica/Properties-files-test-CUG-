@@ -88,6 +88,7 @@ jobs:
           DATE=$(date +%Y-%m-%d)
           TIME=$(date +%I:%M%p)
           cp folder1/file1 folder1/file1_${DATE}_${TIME}
+          cp folder1/file1 folder1/file1_${DATE}_${TIME}
           echo "File copied to folder1/file1_${DATE}_${TIME}"
           ls -lh folder1/
           
