@@ -88,6 +88,6 @@ jobs:
           DATE=$(date +%Y-%m-%d)
           cp folder1/file1 folder1/file1_${DATE}
           echo "File copied to dir2/file1_${DATE}"
-          ls -lh folder1/file1
+          ls -lh folder1/
           
           # Add your processing commands here
