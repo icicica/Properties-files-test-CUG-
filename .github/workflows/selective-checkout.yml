@@ -27,6 +27,8 @@ jobs:
           
       - name: Create backup directories with current date and incremental count
         run: |
+
+          whoami
           # Set timezone and get current date
           CURRENT_DATE=$(date +'%Y%m%d')
           
