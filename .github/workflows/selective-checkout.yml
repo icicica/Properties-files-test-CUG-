@@ -58,7 +58,9 @@ jobs:
           FWK_BACKUP_DIR="/iMobile_3.0_imobile_cug/cloud-config/fwk-properties/backup_${CURRENT_DATE}_${FWK_NEW_COUNT}"
           FSL_BACKUP_DIR="/iMobile_3.0_imobile_cug/cloud-config/fsl-properties/backup_${CURRENT_DATE}_${FSL_NEW_COUNT}"
           
-          
+          # Create backup directories (ensure they exist)
+          sudo mkdir -p "$FWK_BACKUP_DIR"
+          sudo mkdir -p "$FSL_BACKUP_DIR"
 
           mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file1 $FWK_BACKUP_DIR/
           mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file2 $FWK_BACKUP_DIR/
