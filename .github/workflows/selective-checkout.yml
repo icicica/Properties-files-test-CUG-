@@ -32,7 +32,19 @@ jobs:
             dir/dir1/text11
             dir/dir1/text12
           sparse-checkout-cone-mode: false
+      - name: Create backup directories with current date and time
+        run: |
+          # Set timezone to IST and get current date and time
+          
+          CURRENT_DATE=$(date +'%Y%m%d')
+          CURRENT_TIME=$(date +'%H%M%S')
+    
+          # Create backup directories using the date and time
+          mkdir -p /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/backup_${CURRENT_DATE}_${CURRENT_TIME}
+          mkdir -p /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/backup_${CURRENT_DATE}_${CURRENT_TIME}
+    
 
+      
       - name: List checked out files
         run: |
           echo "Root directory contents:"
