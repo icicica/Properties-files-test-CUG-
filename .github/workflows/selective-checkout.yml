@@ -59,30 +59,15 @@ jobs:
           FSL_BACKUP_DIR="/iMobile_3.0_imobile_cug/cloud-config/fsl-properties/backup_${CURRENT_DATE}_${FSL_NEW_COUNT}"
           
           
-          # Move existing files to backup
-          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file1" ]; then
-            mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file1 $FWK_BACKUP_DIR/
-          fi
+
+          mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file1 $FWK_BACKUP_DIR/
+          mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file2 $FWK_BACKUP_DIR/
+          mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file3 $FWK_BACKUP_DIR/
           
-          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file2" ]; then
-            mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file2 $FWK_BACKUP_DIR/
-          fi
-          
-          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file3" ]; then
-            mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file3 $FWK_BACKUP_DIR/
-          fi
-          
-          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text1" ]; then
-            mv /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text1 $FSL_BACKUP_DIR/
-          fi
-          
-          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text2" ]; then
-            mv /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text2 $FSL_BACKUP_DIR/
-          fi
-          
-          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text3" ]; then
-            mv /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text3 $FSL_BACKUP_DIR/
-          fi
+          mv /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text1 $FSL_BACKUP_DIR/
+          mv /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text2 $FSL_BACKUP_DIR/
+          mv /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text3 $FSL_BACKUP_DIR/
+
       
       - name: Copy new files to respective directories
         run: |
@@ -102,10 +87,10 @@ jobs:
       - name: Verify file operations
         run: |
           echo "=== Listing FWK backup directory ==="
-          ls -la /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/backup_$(date +'%Y%m%d')_*
+          ls -la /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
           
           echo "=== Listing FSL backup directory ==="
-          ls -la /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/backup_$(date +'%Y%m%d')_*
+          ls -la /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
           
           echo "=== Listing current FWK directory ==="
           ls -la /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
