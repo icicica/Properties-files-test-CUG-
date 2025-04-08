@@ -1,5 +1,4 @@
-name: Selective Checkout Demo
-
+name: Selective Checkout and Backup
 on:
   push:
     branches: [ main ]
@@ -8,100 +7,108 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  selective-checkout:
-    runs-on: ubuntu-latest
+  selective-checkout-and-backup:
+    runs-on: self-hosted
     steps:
       - name: Checkout specific files
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            # Include README.md
-            README.md
-            
-            # Include all files from folder1 except file2 and file5
+            # Include files from folder1
             folder1/file1
+            folder1/file2
             folder1/file3
-            folder1/file4
             
-            # Include all files from dir except text1 and text5
+            # Include files from dir
+            dir/text1
             dir/text2
             dir/text3
-            dir/text4
-            
-            # Include all files from dir/dir1
-            dir/dir1/text11
-            dir/dir1/text12
           sparse-checkout-cone-mode: false
-      - name: Create backup directories with current date and time
-        run: |
-          # Set timezone to IST and get current date and time
           
+      - name: Create backup directories with current date and incremental count
+        run: |
+          # Set timezone and get current date
           CURRENT_DATE=$(date +'%Y%m%d')
-          CURRENT_TIME=$(date +'%H%M%S')
-    
-          # Create backup directories using the date and time
-          mkdir -p /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/backup_${CURRENT_DATE}_${CURRENT_TIME}
-          mkdir -p /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/backup_${CURRENT_DATE}_${CURRENT_TIME}
-    
-
+          
+          # Find highest existing count for FWK directory and increment
+          FWK_MAX_COUNT=0
+          for dir in /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/backup_${CURRENT_DATE}_*; do
+            if [ -d "$dir" ]; then
+              COUNT=$(echo "$dir" | grep -o '[0-9]*$')
+              if [[ "$COUNT" =~ ^[0-9]+$ ]] && [ "$COUNT" -gt "$FWK_MAX_COUNT" ]; then
+                FWK_MAX_COUNT=$COUNT
+              fi
+            fi
+          done
+          FWK_NEW_COUNT=$((FWK_MAX_COUNT + 1))
+          
+          # Find highest existing count for FSL directory and increment
+          FSL_MAX_COUNT=0
+          for dir in /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/backup_${CURRENT_DATE}_*; do
+            if [ -d "$dir" ]; then
+              COUNT=$(echo "$dir" | grep -o '[0-9]*$')
+              if [[ "$COUNT" =~ ^[0-9]+$ ]] && [ "$COUNT" -gt "$FSL_MAX_COUNT" ]; then
+                FSL_MAX_COUNT=$COUNT
+              fi
+            fi
+          done
+          FSL_NEW_COUNT=$((FSL_MAX_COUNT + 1))
+          
+          # Create backup directories
+          FWK_BACKUP_DIR="/iMobile_3.0_imobile_cug/cloud-config/fwk-properties/backup_${CURRENT_DATE}_${FWK_NEW_COUNT}"
+          FSL_BACKUP_DIR="/iMobile_3.0_imobile_cug/cloud-config/fsl-properties/backup_${CURRENT_DATE}_${FSL_NEW_COUNT}"
+          
+          
+          # Move existing files to backup
+          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file1" ]; then
+            mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file1 $FWK_BACKUP_DIR/
+          fi
+          
+          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file2" ]; then
+            mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file2 $FWK_BACKUP_DIR/
+          fi
+          
+          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file3" ]; then
+            mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file3 $FWK_BACKUP_DIR/
+          fi
+          
+          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text1" ]; then
+            mv /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text1 $FSL_BACKUP_DIR/
+          fi
+          
+          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text2" ]; then
+            mv /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text2 $FSL_BACKUP_DIR/
+          fi
+          
+          if [ -f "/iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text3" ]; then
+            mv /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/text3 $FSL_BACKUP_DIR/
+          fi
       
-      - name: List checked out files
+      - name: Copy new files to respective directories
         run: |
-          echo "Root directory contents:"
-          ls -la
-          echo "==============================="
-          
-          echo "Checking contents of folder1:"
-          ls -la folder1 || echo "folder1 not found"
-          echo "==============================="
-          
-          echo "Checking contents of dir:"
-          ls -la dir || echo "dir not found"
-          echo "==============================="
-          
-          echo "Checking contents of dir/dir1:"
-          ls -la dir/dir1 || echo "dir/dir1 not found"
+            cp folder1/file1 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
 
-      - name: Verify excluded files
-        run: |
-          echo "Verifying excluded files don't exist:"
-          
-          if [ -f "folder1/file2" ]; then
-            echo "ERROR: folder1/file2 was not excluded!"
-          else
-            echo "SUCCESS: folder1/file2 was properly excluded."
-          fi
-          
-          if [ -f "folder1/file5" ]; then
-            echo "ERROR: folder1/file5 was not excluded!"
-          else
-            echo "SUCCESS: folder1/file5 was properly excluded."
-          fi
-          
-          if [ -f "dir/text1" ]; then
-            echo "ERROR: dir/text1 was not excluded!"
-          else
-            echo "SUCCESS: dir/text1 was properly excluded."
-          fi
-          
-          if [ -f "dir/text5" ]; then
-            echo "ERROR: dir/text5 was not excluded!"
-          else
-            echo "SUCCESS: dir/text5 was properly excluded."
-          fi
+            cp folder1/file2 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
 
-      - name: Run your actual processing
-        run: |
-          echo "Processing checked out files..."
-                # Option 1: Rename with current date
-      - name: Copy file with date
-        run: |
-          mkdir -p folder1
-          DATE=$(date +%Y-%m-%d)
-          TIME=$(date +%I:%M%p)
-          cp folder1/file1 folder1/file1_${DATE}_${TIME}
-          cp folder1/file1 folder1/file1_${DATE}_${TIME}
-          echo "File copied to folder1/file1_${DATE}_${TIME}"
-          ls -lh folder1/
+            cp folder1/file3 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
+
+            cp dir/text1 /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
+
+            cp dir/text2 /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
+
+            cp dir/text3 /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
+
           
-          # Add your processing commands here
+      - name: Verify file operations
+        run: |
+          echo "=== Listing FWK backup directory ==="
+          ls -la /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/backup_$(date +'%Y%m%d')_*
+          
+          echo "=== Listing FSL backup directory ==="
+          ls -la /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/backup_$(date +'%Y%m%d')_*
+          
+          echo "=== Listing current FWK directory ==="
+          ls -la /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
+          
+          echo "=== Listing current FSL directory ==="
+          ls -la /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
