@@ -62,7 +62,11 @@ jobs:
           
           # Create backup directories (ensure they exist)
           sudo mkdir -p "$FWK_BACKUP_DIR"
+          Chmod -R 755 "$FWK_BACKUP_DIR"
           sudo mkdir -p "$FSL_BACKUP_DIR"
+          Chmod -R 755 "$FSL_BACKUP_DIR"
+
+          Chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file1
 
           mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file1 $FWK_BACKUP_DIR/
           mv /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/file2 $FWK_BACKUP_DIR/
