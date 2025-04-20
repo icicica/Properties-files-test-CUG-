@@ -68,8 +68,8 @@ jobs:
       - name: Backup existing files (excluding specified files)
         run: |
           # Set permission for files in fwk-properties and fsl-properties directories
-          chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
-          chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
+          # chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
+          # chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
           
           # Move files from fwk-properties to backup (except the specified files)
           find /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/ -type f \
