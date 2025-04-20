@@ -8,7 +8,7 @@ on:
 
 jobs:
   selective-checkout-and-backup:
-    runs-on: self-hosted
+    runs-on: imobile-prod
     steps:
       - name: Checkout specific files
         uses: actions/checkout@v4
