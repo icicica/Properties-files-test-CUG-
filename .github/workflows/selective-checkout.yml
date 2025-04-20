@@ -14,10 +14,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            # Include all files from folder1 (fwk folder)
+            # Include all files from fwk-properties (fwk folder)
             fsl-properties/**
             
-            # Include all files from dir (fsl folder)
+            # Include all files from fsl-properties (fsl folder)
             fwk-properties/**
           sparse-checkout-cone-mode: false
 
@@ -117,20 +117,20 @@ jobs:
       
       - name: List available files in the repository
         run: |
-          echo "=== Listing files in folder1 (fwk files) ==="
-          ls -la folder1/
+          echo "=== Listing files in fwk-properties (fwk files) ==="
+          ls -la fwk-properties/
           
-          echo "=== Listing files in dir (fsl files) ==="
-          ls -la dir/
+          echo "=== Listing files in fsl-properties (fsl files) ==="
+          ls -la fsl-properties/
       
       - name: Copy new files to respective directories
         run: |
             echo "=== Copying new files to respective directories ==="
-            # Copy all files from folder1 to fwk-properties directory
-            cp -rv folder1/* /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
+            # Copy all files from fwk-properties to fwk-properties directory
+            cp -rv fwk-properties/* /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
             
             # Copy all files from dir to fsl-properties directory
-            cp -rv dir/* /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
+            cp -rv fsl-properties/* /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
             
             # Set appropriate permissions
             # chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
