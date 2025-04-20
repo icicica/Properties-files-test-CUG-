@@ -106,8 +106,8 @@ jobs:
             cp -r dir/* /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
             
             # Set appropriate permissions
-            chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
-            chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
+            # chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
+            # chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
           
       - name: Verify file operations
         run: |
