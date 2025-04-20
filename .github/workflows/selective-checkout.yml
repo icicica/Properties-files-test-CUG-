@@ -8,7 +8,7 @@ on:
 
 jobs:
   selective-checkout-and-backup:
-    runs-on: imobile-prod
+    runs-on: self-hosted
     steps:
       - name: Checkout repository with all files
         uses: actions/checkout@v4
@@ -71,23 +71,42 @@ jobs:
           # chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
           # chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
           
-          # Move files from fwk-properties to backup (except the specified files)
-          find /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/ -type f \
-            ! -name "abc1.txt" \
-            ! -name "abc2.txt" \
-            ! -name "abc3.txt" \
-            ! -name "abc3.txt" \
-            ! -path "*/backup_*/*" \
-            -exec mv {} $FWK_BACKUP_DIR/ \;
+          echo "=== Listing files in FWK directory before backup ==="
+          ls -la /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
           
-          # Move files from fsl-properties to backup (except the specified files)
-          find /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/ -type f \
-            ! -name "abc1.txt" \
-            ! -name "abc2.txt" \
-            ! -name "abc3.txt" \
-            ! -name "abc3.txt" \
-            ! -path "*/backup_*/*" \
-            -exec mv {} $FSL_BACKUP_DIR/ \;
+          echo "=== Listing files in FSL directory before backup ==="
+          ls -la /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
+          
+          # Move FWK files directly to backup
+          for file in /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/*; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              # Skip specified files and backup directories
+              if [[ "$filename" != "abc1.txt" && "$filename" != "abc2.txt" && "$filename" != "abc3.txt" && "$filename" != "abc3.txt" && ! "$filename" =~ ^backup_ ]]; then
+                echo "Moving FWK file: $filename to backup"
+                mv -v "$file" "$FWK_BACKUP_DIR/"
+              fi
+            fi
+          done
+          
+          # Move FSL files directly to backup
+          for file in /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/*; do
+            if [ -f "$file" ]; then
+              filename=$(basename "$file")
+              # Skip specified files and backup directories
+              if [[ "$filename" != "abc1.txt" && "$filename" != "abc2.txt" && "$filename" != "abc3.txt" && "$filename" != "abc3.txt" && ! "$filename" =~ ^backup_ ]]; then
+                echo "Moving FSL file: $filename to backup"
+                mv -v "$file" "$FSL_BACKUP_DIR/"
+              fi
+            fi
+          done
+          
+          echo "=== Listing backup directories after move ==="
+          echo "FWK backup directory contents:"
+          ls -la "$FWK_BACKUP_DIR/"
+          
+          echo "FSL backup directory contents:"
+          ls -la "$FSL_BACKUP_DIR/"
       
       - name: List available files in the repository
         run: |
@@ -99,11 +118,12 @@ jobs:
       
       - name: Copy new files to respective directories
         run: |
+            echo "=== Copying new files to respective directories ==="
             # Copy all files from folder1 to fwk-properties directory
-            cp -r folder1/* /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
+            cp -rv folder1/* /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
             
             # Copy all files from dir to fsl-properties directory
-            cp -r dir/* /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
+            cp -rv dir/* /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
             
             # Set appropriate permissions
             # chmod -R 755 /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
@@ -111,14 +131,15 @@ jobs:
           
       - name: Verify file operations
         run: |
-          echo "=== Listing FWK backup directory ==="
-          ls -la $FWK_BACKUP_DIR/
+          echo "=== Final verification ==="
+          echo "FWK backup directory contents:"
+          ls -la "$FWK_BACKUP_DIR/"
           
-          echo "=== Listing FSL backup directory ==="
-          ls -la $FSL_BACKUP_DIR/
+          echo "FSL backup directory contents:"
+          ls -la "$FSL_BACKUP_DIR/"
           
-          echo "=== Listing current FWK directory ==="
+          echo "Current FWK directory contents:"
           ls -la /iMobile_3.0_imobile_cug/cloud-config/fwk-properties/
           
-          echo "=== Listing current FSL directory ==="
+          echo "Current FSL directory contents:"
           ls -la /iMobile_3.0_imobile_cug/cloud-config/fsl-properties/
