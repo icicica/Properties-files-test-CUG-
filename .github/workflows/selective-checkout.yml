@@ -15,11 +15,18 @@ jobs:
         with:
           sparse-checkout: |
             # Include all files from folder1 (fwk folder)
-            folder1/**
+            fsl-properties/**
             
             # Include all files from dir (fsl folder)
-            dir/**
+            fwk-properties/**
           sparse-checkout-cone-mode: false
+
+      - name: file-remove fwk folder
+        run: |
+          rm -f fwk-properties/db-mstr-cug.properties
+          rm -f fwk-properties/db-sec-cug.properties
+          rm -f fwk-properties/fwkredis-cug.properties
+          rm -f fwk-properties/fwkredis.properties
           
       - name: Create backup directories with current date and incremental count
         run: |
@@ -82,7 +89,7 @@ jobs:
             if [ -f "$file" ]; then
               filename=$(basename "$file")
               # Skip specified files and backup directories
-              if [[ "$filename" != "abc1.txt" && "$filename" != "abc2.txt" && "$filename" != "abc3.txt" && "$filename" != "abc3.txt" && ! "$filename" =~ ^backup_ ]]; then
+              if [[ "$filename" != "db-mstr-cug.properties" && "$filename" != "db-sec-cug.properties" && "$filename" != "fwkredis-cug.properties" && "$filename" != "fwkredis.properties" && ! "$filename" =~ ^backup_ ]]; then
                 echo "Moving FWK file: $filename to backup"
                 mv -v "$file" "$FWK_BACKUP_DIR/"
               fi
@@ -94,7 +101,7 @@ jobs:
             if [ -f "$file" ]; then
               filename=$(basename "$file")
               # Skip specified files and backup directories
-              if [[ "$filename" != "abc1.txt" && "$filename" != "abc2.txt" && "$filename" != "abc3.txt" && "$filename" != "abc3.txt" && ! "$filename" =~ ^backup_ ]]; then
+              if [[ "$filename" != "abc1.txt" && "$filename" != "abc2.txt" && ! "$filename" =~ ^backup_ ]]; then
                 echo "Moving FSL file: $filename to backup"
                 mv -v "$file" "$FSL_BACKUP_DIR/"
               fi
